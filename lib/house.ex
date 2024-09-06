@@ -1,0 +1,2 @@
+defmodule House do
+end

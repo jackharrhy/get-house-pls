@@ -4,14 +4,14 @@ defmodule House.Repo.Migrations.AddHouseTable do
   def change do
     create table(:houses) do
       add :mls, :integer, null: false
-      add :price, :decimal, null: false
+      add :price, :decimal, null: true
       add :address, {:array, :string}, null: false
       add :lat, :float, null: false
       add :lon, :float, null: false
       add :photos, {:array, :string}
       add :time_on_realtor, :string
       add :bedrooms, :integer
-      add :bathrooms, :float
+      add :bathrooms, :integer
 
       timestamps()
     end

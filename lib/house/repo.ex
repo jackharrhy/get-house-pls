@@ -7,6 +7,8 @@ end
 defmodule House.Schema.House do
   use Ecto.Schema
   import Ecto.Changeset
+  import Ecto.Query
+  alias House.Repo
 
   schema "houses" do
     field(:mls, :integer)
@@ -17,7 +19,7 @@ defmodule House.Schema.House do
     field(:photos, {:array, :string})
     field(:time_on_realtor, :string)
     field(:bedrooms, :integer)
-    field(:bathrooms, :float)
+    field(:bathrooms, :integer)
 
     timestamps()
   end
@@ -35,6 +37,17 @@ defmodule House.Schema.House do
       :bedrooms,
       :bathrooms
     ])
-    |> validate_required([:mls, :price, :address, :lat, :lon])
+    |> validate_required([:mls, :address, :lat, :lon])
+  end
+
+  def exists?(mls) do
+    query = from(h in House.Schema.House, where: h.mls == ^mls)
+    Repo.exists?(query)
+  end
+
+  def insert_house(attrs) do
+    %House.Schema.House{}
+    |> changeset(attrs)
+    |> Repo.insert()
   end
 end

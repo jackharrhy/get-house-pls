@@ -27,3 +27,4 @@ house-*.tar
 
 .env
 *.db*
+*.secret*

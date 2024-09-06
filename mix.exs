@@ -23,7 +23,8 @@ defmodule House.MixProject do
       {:ecto_sql, "~> 3.12"},
       {:ecto_sqlite3, "~> 0.17.2"},
       {:quantum, "~> 3.0"},
-      {:req, "~> 0.5.0"}
+      {:req, "~> 0.5.0"},
+      {:telegram, github: "visciang/telegram", tag: "1.2.1"}
     ]
   end
 end

@@ -36,9 +36,13 @@ defmodule House.Fetch do
       photo = property["Photo"]
       building = result["Building"]
 
+      price = property["PriceUnformattedValue"]
+
+      price = if is_nil(price), do: property["Price"], else: price |> String.to_integer()
+
       %{
         mls: result["MlsNumber"] |> String.to_integer(),
-        price: property["Price"],
+        price: price,
         address: address["AddressText"] |> String.split("|"),
         lat: address["Latitude"],
         lon: address["Latitude"],
@@ -48,13 +52,5 @@ defmodule House.Fetch do
         bathrooms: building["Bathrooms"]
       }
     end
-  end
-
-  def get_data() do
-    fetch_data() |> format_data()
-  end
-
-  def test do
-    get_data() |> IO.inspect()
   end
 end

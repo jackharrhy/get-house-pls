@@ -1,0 +1,11 @@
+services:
+  house:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./data:/data
+    environment:
+      - HOUSE_DATABASE=/data/house.db
+    env_file:
+      - .env

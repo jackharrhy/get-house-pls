@@ -5,7 +5,7 @@ defmodule House.MixProject do
     [
       app: :house,
       version: "0.1.0",
-      elixir: "~> 1.17",
+      elixir: "~> 1.16",
       start_permanent: Mix.env() == :prod,
       deps: deps()
     ]
@@ -24,7 +24,8 @@ defmodule House.MixProject do
       {:ecto_sqlite3, "~> 0.17.2"},
       {:quantum, "~> 3.0"},
       {:req, "~> 0.5.0"},
-      {:telegram, github: "visciang/telegram", tag: "1.2.1"}
+      {:telegram, github: "visciang/telegram", tag: "1.2.1"},
+      {:dotenvy, "~> 0.8.0"}
     ]
   end
 end

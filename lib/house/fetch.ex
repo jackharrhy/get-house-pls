@@ -1,19 +1,15 @@
 defmodule House.Fetch do
   def fetch_data do
-    form = [
-      ZoomLevel: 15,
-      LatitudeMax: 47.58481,
-      LongitudeMax: -52.70930,
-      LatitudeMin: 47.55143,
-      LongitudeMin: -52.74952,
-      Sort: "6-D",
-      Currency: "CAD",
-      IncludeHiddenListings: false,
-      RecordsPerPage: 10,
-      ApplicationId: 1,
-      CultureId: 1,
-      CurrentPage: 1
-    ]
+    form =
+      [
+        Sort: "6-D",
+        Currency: "CAD",
+        IncludeHiddenListings: false,
+        RecordsPerPage: 10,
+        ApplicationId: 1,
+        CultureId: 1,
+        CurrentPage: 1
+      ] ++ Application.fetch_env!(:house, :realtor_post_config)
 
     Req.post!(
       "https://api2.realtor.ca/Listing.svc/PropertySearch_Post",
@@ -40,7 +36,28 @@ defmodule House.Fetch do
 
       price = if is_nil(price), do: property["Price"], else: price |> String.to_integer()
 
+      bedrooms =
+        if building["Bedrooms"] do
+          case Integer.parse(building["Bedrooms"]) do
+            {int, _} -> int
+            :error -> nil
+          end
+        else
+          nil
+        end
+
+      bathrooms =
+        if building["Bathrooms"] do
+          case Integer.parse(building["Bathrooms"]) do
+            {int, _} -> int
+            :error -> nil
+          end
+        else
+          nil
+        end
+
       %{
+        url: "https://realtor.ca#{result["RelativeDetailsURL"]}",
         mls: result["MlsNumber"] |> String.to_integer(),
         price: price,
         address: address["AddressText"] |> String.split("|"),
@@ -48,8 +65,8 @@ defmodule House.Fetch do
         lon: address["Latitude"],
         photos: photo |> Enum.map(& &1["HighResPath"]),
         time_on_realtor: result["TimeOnRealtor"],
-        bedrooms: building["Bedrooms"],
-        bathrooms: building["Bathrooms"]
+        bedrooms: bedrooms,
+        bathrooms: bathrooms
       }
     end
   end

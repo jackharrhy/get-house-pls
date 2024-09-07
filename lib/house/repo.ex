@@ -10,8 +10,8 @@ defmodule House.Schema.House do
   import Ecto.Query
   alias House.Repo
 
+  @primary_key {:mls, :integer, autogenerate: false}
   schema "houses" do
-    field(:mls, :integer)
     field(:price, :decimal)
     field(:address, {:array, :string})
     field(:lat, :float)
@@ -46,8 +46,18 @@ defmodule House.Schema.House do
   end
 
   def insert_house(attrs) do
+    IO.inspect(attrs)
+
     %House.Schema.House{}
     |> changeset(attrs)
     |> Repo.insert()
+  end
+
+  def update_house(attrs) do
+    house = Repo.get!(House.Schema.House, attrs.mls)
+
+    house
+    |> changeset(attrs)
+    |> Repo.update()
   end
 end

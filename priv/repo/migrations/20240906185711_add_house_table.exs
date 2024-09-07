@@ -2,8 +2,8 @@ defmodule House.Repo.Migrations.AddHouseTable do
   use Ecto.Migration
 
   def change do
-    create table(:houses) do
-      add :mls, :integer, null: false
+    create table(:houses, primary_key: false) do
+      add :mls, :integer, primary_key: true
       add :price, :decimal, null: true
       add :address, {:array, :string}, null: false
       add :lat, :float, null: false

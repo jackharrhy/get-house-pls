@@ -1,1 +1,3 @@
-House.Checker.check() |> IO.inspect()
+House.Checker.test() |> IO.inspect()
+
+IO.inspect("Done!")

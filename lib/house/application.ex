@@ -7,7 +7,7 @@ defmodule House.Application do
     ]
 
     children =
-      if Mix.env() != :dev do
+      if Application.get_env(:house, :env) == :prod do
         children ++ [House.Scheduler]
       else
         children

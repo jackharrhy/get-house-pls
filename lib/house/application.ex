@@ -18,8 +18,10 @@ defmodule House.Application do
 
     opts = [strategy: :one_for_one, name: House.Supervisor]
     Logger.info("Starting root supervisor")
-    Supervisor.start_link(children, opts)
+    res = Supervisor.start_link(children, opts)
 
     House.Checker.check()
+
+    res
   end
 end

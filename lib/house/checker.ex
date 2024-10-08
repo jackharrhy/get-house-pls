@@ -22,7 +22,7 @@ defmodule House.Checker do
         else
           Logger.info("House with MLS #{property.mls} does not exist")
           {:ok, _} = House.insert_house(property)
-          :ok = Bot.send_house_details(property)
+          {:ok, _} = Bot.send_house_details(property)
           {:new_house, property.mls}
         end
       end

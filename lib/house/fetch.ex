@@ -62,7 +62,7 @@ defmodule House.Fetch do
         price: price,
         address: address["AddressText"] |> String.split("|"),
         lat: address["Latitude"],
-        lon: address["Latitude"],
+        lon: address["Longitude"],
         photos: photo |> Enum.map(& &1["HighResPath"]),
         time_on_realtor: result["TimeOnRealtor"],
         bedrooms: bedrooms,

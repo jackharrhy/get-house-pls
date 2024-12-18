@@ -1,4 +1,4 @@
-FROM hexpm/elixir:1.17.2-erlang-27.0.1-alpine-3.20.3 AS builder
+FROM hexpm/elixir:1.17.3-erlang-27.2-alpine-3.20.3 AS builder
 
 RUN apk add --no-cache git
 
@@ -16,7 +16,7 @@ COPY config ./config
 RUN mix do compile
 RUN mix release
 
-FROM hexpm/erlang:27.0.1-alpine-3.20.3
+FROM hexpm/erlang:27.2-alpine-3.20.3
 
 WORKDIR /app
 

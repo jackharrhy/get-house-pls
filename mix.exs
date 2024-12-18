@@ -14,6 +14,7 @@ defmodule House.MixProject do
   def application do
     [
       mod: {House.Application, []},
+      included_applications: [:nostrum],
       extra_applications: [:logger, :runtime_tools]
     ]
   end
@@ -25,6 +26,7 @@ defmodule House.MixProject do
       {:quantum, "~> 3.0"},
       {:req, "~> 0.5.0"},
       {:telegram, github: "visciang/telegram", tag: "1.2.1"},
+      {:nostrum, "~> 0.10"},
       {:dotenvy, "~> 0.8.0"}
     ]
   end

@@ -3,6 +3,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    # Chrome needs more than Docker's default 64MB /dev/shm
+    shm_size: "2gb"
     volumes:
       - ./data:/data
     environment:

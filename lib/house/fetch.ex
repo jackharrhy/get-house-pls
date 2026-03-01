@@ -1,32 +1,66 @@
 defmodule House.Fetch do
+  require Logger
+
   def fetch_data do
+    {:ok, cookies} = House.Cookie.fetch_cookies()
+
     form =
       [
         Sort: "6-D",
+        PropertyTypeGroupID: 1,
+        TransactionTypeId: 2,
+        PropertySearchTypeId: 0,
         Currency: "CAD",
         IncludeHiddenListings: false,
-        RecordsPerPage: 10,
+        RecordsPerPage: 12,
         ApplicationId: 1,
         CultureId: 1,
+        Version: "7.0",
         CurrentPage: 1
       ] ++ Application.fetch_env!(:house, :realtor_post_config)
 
     Req.post!(
       "https://api2.realtor.ca/Listing.svc/PropertySearch_Post",
       headers: [
-        "User-Agent":
-          "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:129.0) Gecko/20100101 Firefox/129.0",
-        Referer: "https://www.realtor.ca/",
-        Origin: "https://www.realtor.ca/",
-        Host: "api2.realtor.ca",
-        Cookie: "reese84=not-a-user-lol"
+        {"user-agent",
+         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36"},
+        {"referer", "https://www.realtor.ca/"},
+        {"origin", "https://www.realtor.ca"},
+        {"accept", "*/*"},
+        {"accept-language", "en-US,en;q=0.9"},
+        {"content-type", "application/x-www-form-urlencoded; charset=UTF-8"},
+        {"sec-ch-ua", ~s("Not:A-Brand";v="99", "Google Chrome";v="145", "Chromium";v="145")},
+        {"sec-ch-ua-mobile", "?0"},
+        {"sec-ch-ua-platform", ~s("macOS")},
+        {"sec-fetch-dest", "empty"},
+        {"sec-fetch-mode", "cors"},
+        {"sec-fetch-site", "same-site"},
+        {"cookie", cookies}
       ],
       form: form
     )
   end
 
   def format_data(res) do
-    for result <- res.body["Results"] do
+    case res.body do
+      %{"Results" => results} when is_list(results) ->
+        format_results(results)
+
+      body when is_binary(body) ->
+        Logger.error(
+          "API returned non-JSON response (likely bot detection): #{String.slice(body, 0, 200)}"
+        )
+
+        []
+
+      other ->
+        Logger.error("Unexpected API response format: #{inspect(other, limit: 200)}")
+        []
+    end
+  end
+
+  defp format_results(results) do
+    for result <- results do
       property = result["Property"]
       address = property["Address"]
       photo = property["Photo"]

@@ -22,7 +22,6 @@ defmodule House.Cookie do
       Port.open({:spawn_executable, System.find_executable("node")}, [
         :binary,
         :exit_status,
-        :stderr_to_stdout,
         args: [script]
       ])
 
@@ -35,7 +34,16 @@ defmodule House.Cookie do
         collect_port_output(port, acc <> data, timeout)
 
       {^port, {:exit_status, 0}} ->
-        cookies = String.trim(acc)
+        # Take only the last non-empty line — cookie script writes the cookie
+        # string to stdout, but stray output (e.g. from child processes) could
+        # leak in on earlier lines.
+        cookies =
+          acc
+          |> String.split("\n")
+          |> Enum.map(&String.trim/1)
+          |> Enum.filter(&(&1 != ""))
+          |> List.last("")
+
         Logger.info("Successfully obtained cookies (#{String.length(cookies)} chars)")
         {:ok, cookies}
 

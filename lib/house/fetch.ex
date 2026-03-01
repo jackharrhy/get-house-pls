@@ -2,9 +2,7 @@ defmodule House.Fetch do
   require Logger
 
   def fetch_data do
-    {:ok, cookies} = House.Cookie.fetch_cookies()
-
-    form =
+    form_params =
       [
         Sort: "6-D",
         PropertyTypeGroupID: 1,
@@ -19,39 +17,20 @@ defmodule House.Fetch do
         CurrentPage: 1
       ] ++ Application.fetch_env!(:house, :realtor_post_config)
 
-    Req.post!(
-      "https://api2.realtor.ca/Listing.svc/PropertySearch_Post",
-      headers: [
-        {"user-agent",
-         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36"},
-        {"referer", "https://www.realtor.ca/"},
-        {"origin", "https://www.realtor.ca"},
-        {"accept", "*/*"},
-        {"accept-language", "en-US,en;q=0.9"},
-        {"content-type", "application/x-www-form-urlencoded; charset=UTF-8"},
-        {"sec-ch-ua", ~s("Not:A-Brand";v="99", "Google Chrome";v="145", "Chromium";v="145")},
-        {"sec-ch-ua-mobile", "?0"},
-        {"sec-ch-ua-platform", ~s("macOS")},
-        {"sec-fetch-dest", "empty"},
-        {"sec-fetch-mode", "cors"},
-        {"sec-fetch-site", "same-site"},
-        {"cookie", cookies}
-      ],
-      form: form
-    )
+    # Build URL-encoded form body string for the Node script
+    form_body =
+      form_params
+      |> Enum.map(fn {k, v} -> "#{k}=#{URI.encode_www_form(to_string(v))}" end)
+      |> Enum.join("&")
+
+    {:ok, json} = House.Browser.fetch_listings(form_body)
+    Jason.decode!(json)
   end
 
-  def format_data(res) do
-    case res.body do
+  def format_data(body) do
+    case body do
       %{"Results" => results} when is_list(results) ->
         format_results(results)
-
-      body when is_binary(body) ->
-        Logger.error(
-          "API returned non-JSON response (likely bot detection): #{String.slice(body, 0, 200)}"
-        )
-
-        []
 
       other ->
         Logger.error("Unexpected API response format: #{inspect(other, limit: 200)}")

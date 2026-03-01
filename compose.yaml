@@ -1,5 +1,6 @@
 services:
   house:
+    image: ghcr.io/jackharrhy/get-house-pls:main
     build:
       context: .
       dockerfile: Dockerfile
